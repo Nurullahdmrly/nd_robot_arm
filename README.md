@@ -9,11 +9,8 @@ Gazebo:
 
 ![model](https://github.com/dmrly/nd_robot_arm/blob/melodic-devel/nd_robot_arm/gazebo.png?raw=true)
 
-Rviz (Moveit):
 
-![model](https://github.com/dmrly/nd_robot_arm/blob/melodic-devel/nd_robot_arm/rviz.png?raw=true)
-
-Youtube:
+RViz(Moveit): Go Youtube (click photo)
 
 [![Watch the video](https://github.com/dmrly/nd_robot_arm/blob/melodic-devel/nd_robot_arm/rviz.png)](https://youtu.be/0x73rQUDwuk)
 
