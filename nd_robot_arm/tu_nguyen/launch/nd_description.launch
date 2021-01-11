@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <!-- Do not launch Gazebo simulator and use Joint State publisher to debug joints -->
+  <arg name="sim" default="true"/>
+  <arg name="output" default="log"/>
+
+  <!-- Load the URDF into the ROS Parameter Server -->
+  <param name="robot_description"
+    command="$(find xacro)/xacro --inorder '$(find tu_nguyen)/urdf/tu_nguyen.urdf'" />
+
+  <!-- State joints publisher for debug -->
+  <node unless="$(arg sim)" name="joint_state_publisher" pkg="joint_state_publisher"
+    type="joint_state_publisher" output="$(arg output)" />
+
+  <!-- Combine joint values -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher"
+    type="robot_state_publisher" output="$(arg output)" />
+
+  <!-- Launch Rviz for visualization -->
+  
+
+</launch>
