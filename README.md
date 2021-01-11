@@ -12,3 +12,8 @@ Gazebo:
 Rviz (Moveit):
 
 ![model](https://github.com/dmrly/nd_robot_arm/blob/melodic-devel/nd_robot_arm/rviz.png?raw=true)
+
+Youtube:
+
+[![Watch the video](https://github.com/dmrly/nd_robot_arm/blob/melodic-devel/nd_robot_arm/rviz.png)](https://youtu.be/0x73rQUDwuk)
+
