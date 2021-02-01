@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<library path="lib/libtu_nguyen_arm_moveit_ikfast_plugin">
+  <class base_class_type="kinematics::KinematicsBase" name="tu_nguyen_arm/IKFastKinematicsPlugin" type="tu_nguyen_arm::IKFastKinematicsPlugin">
+    <description>IKFast61 plugin for closed-form kinematics of tu_nguyen arm</description>
+  </class>
+</library>
