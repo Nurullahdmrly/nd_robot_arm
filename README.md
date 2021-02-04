@@ -12,5 +12,5 @@ Gazebo:
 
 RViz(Moveit): Go Youtube (click photo)
 
-[![Watch the video](https://github.com/dmrly/nd_robot_arm/blob/melodic-devel/nd_robot_arm/rviz.png)](https://youtu.be/0x73rQUDwuk)
+[![Watch the video](https://github.com/dmrly/nd_robot_arm/blob/melodic-devel/nd_robot_arm/rviz.png)](https://youtu.be/uNlal02-610)
 
