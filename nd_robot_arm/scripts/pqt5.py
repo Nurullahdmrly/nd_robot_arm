@@ -9,11 +9,14 @@ import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg 
 import math 
+from tf.transformations import quaternion_from_euler
 from geometry_msgs.msg import PoseStamped
 from math import pi
 from std_msgs.msg import String
 from moveit_commander.conversions import pose_to_list
 from PyQt5 import QtWidgets
+from moveit_commander.exception import MoveItCommanderException
+from moveit_commander import move_group
 
 moveit_commander.roscpp_initialize(sys.argv)
 rospy.init_node('move_group_python_interface_tutorial', anonymous=True)
@@ -210,7 +213,7 @@ def go_to_joint_state(j0,j1,j2,j3,):
     current_joints = group.get_current_joint_values()
     return all_close(joint_goal, current_joints, 0.01)
 
-def go_to_pose_goal(x,y,z,w):
+def go_to_pose_goal(b,c,d,x,y,z,w):
     # Copy class variables to local variables to make the web tutorials more clear.
     # In practice, you should use the class variables directly unless you have a good
     # reason not to.
@@ -222,14 +225,26 @@ def go_to_pose_goal(x,y,z,w):
     ## ^^^^^^^^^^^^^^^^^^^^^^^
     ## We can plan a motion for this group to a desired pose for the
     ## end-effector:
+
+    #arm = move_group.MoveGroupCommander("arm")
+    group.set_goal_orientation_tolerance(0.8)
+    group.set_goal_position_tolerance(0.02)
+    #plan2 = group.go()
+    print(group.get_goal_orientation_tolerance(),group.get_goal_position_tolerance())
+    rospy.sleep(0.5)
+    
     pose_goal = geometry_msgs.msg.Pose()
+    pose_goal.orientation.x = x
+    pose_goal.orientation.y = y
+    pose_goal.orientation.z = z
     pose_goal.orientation.w = w
-    pose_goal.position.x = x
-    pose_goal.position.y = y
-    pose_goal.position.z = z
+    pose_goal.position.x = b
+    pose_goal.position.y = c
+    pose_goal.position.z = d
+    
 
     group.set_pose_target(pose_goal)
-    print(pose_goal)
+
     ## Now, we call the planner to compute the plan and execute it.
     plan = group.go(wait=True)
     # Calling `stop()` ensures that there is no residual movement
@@ -239,7 +254,9 @@ def go_to_pose_goal(x,y,z,w):
     group.clear_pose_targets()
 
     print("plan executed")
-
+    print(group.get_current_pose())
+    print(group.get_current_rpy())
+    # For testing:
     # Calling `stop()` ensures that there is no residual movement
     group.stop()
     # It is always good to clear your targets after planning with poses.
@@ -271,20 +288,45 @@ class Pencere (QtWidgets.QWidget):
     def init_ui(self):
 
 
-        self.yazix = QtWidgets.QLineEdit()
-        self.yaziy = QtWidgets.QLineEdit()
-        self.yaziz = QtWidgets.QLineEdit()
-        self.yazi_alani =QtWidgets.QLineEdit()
+        self.yazix = QtWidgets.QLineEdit("0")
+        self.yaziy = QtWidgets.QLineEdit("0")
+        self.yaziz = QtWidgets.QLineEdit("0")
+        self.yazi_alani =QtWidgets.QLineEdit("0")
+        self.euy =QtWidgets.QLineEdit("0")
+        self.euz =QtWidgets.QLineEdit("0")
         self.temizle = QtWidgets.QPushButton("Temizle")
         self.yazdir = QtWidgets.QPushButton("Yazdir")
         self.hesapla = QtWidgets.QPushButton("Hedefe Git")
-        self.x = QtWidgets.QLabel("j0 eklemin olcegi")
-        self.y = QtWidgets.QLabel("j1 eklemin olcegi")
-        self.z = QtWidgets.QLabel("j2 eklemin olcegi")
-        self.w = QtWidgets.QLabel("j3 eklemin olcegi")
+        self.x = QtWidgets.QLabel("x")
+        self.y = QtWidgets.QLabel("y")
+        self.z = QtWidgets.QLabel("z")
+        self.ex = QtWidgets.QLabel("r")
+        self.ey = QtWidgets.QLabel("p")
+        self.ez = QtWidgets.QLabel("y")
+
+        self.hes =QtWidgets.QPushButton("Eklemleri oynat")
+        self.j0 = QtWidgets.QLineEdit("0")
+        self.j1 = QtWidgets.QLineEdit("0")
+        self.j2 = QtWidgets.QLineEdit("0")
+        self.j3 = QtWidgets.QLineEdit("0")
+        self.y0 = QtWidgets.QLabel("Eklem 1")
+        self.y1 = QtWidgets.QLabel("Eklem 2")
+        self.y2 = QtWidgets.QLabel("Eklem 3")
+        self.y3 = QtWidgets.QLabel("Eklem 4")
 
         h_box = QtWidgets.QHBoxLayout()
         v_box = QtWidgets.QVBoxLayout()
+        c_box = QtWidgets.QVBoxLayout()
+
+        c_box.addWidget(self.y0)
+        c_box.addWidget(self.j0)
+        c_box.addWidget(self.y1)
+        c_box.addWidget(self.j1)
+        c_box.addWidget(self.y2)
+        c_box.addWidget(self.j2)
+        c_box.addWidget(self.y3)
+        c_box.addWidget(self.j3)
+        c_box.addWidget(self.hes)
 
         v_box.addWidget(self.x)
         v_box.addWidget(self.yazix)
@@ -292,13 +334,19 @@ class Pencere (QtWidgets.QWidget):
         v_box.addWidget(self.yaziy)
         v_box.addWidget(self.z)
         v_box.addWidget(self.yaziz)
-        v_box.addWidget(self.w)
+        v_box.addWidget(self.ex)
         v_box.addWidget(self.yazi_alani)
+        v_box.addWidget(self.ey)
+        v_box.addWidget(self.euy)
+        v_box.addWidget(self.ez)
+        v_box.addWidget(self.euz)
         
         v_box.addWidget(self.temizle)
         v_box.addWidget(self.yazdir)
         v_box.addWidget(self.hesapla)
         
+        h_box.addStretch()
+        h_box.addLayout(c_box)
         h_box.addStretch()
         h_box.addLayout(v_box)
         h_box.addStretch()
@@ -307,6 +355,7 @@ class Pencere (QtWidgets.QWidget):
         self.temizle.clicked.connect(self.click)
         self.yazdir.clicked.connect(self.click)
         self.hesapla.clicked.connect(self.click)
+        self.hes.clicked.connect(self.click)
 
         self.setWindowTitle("Robot arm goal")
         self.setGeometry(100,100,500,500)
@@ -321,15 +370,31 @@ class Pencere (QtWidgets.QWidget):
             self.yazix.clear()
             self.yaziy.clear()
             self.yaziz.clear()
+            self.euy()
+            self.euz()
         elif sender.text() == "Yazdir":    
-            print("x: " + self.yazix.text() + "y: " + self.yaziy.text() + "z: " +self.yaziz.text() + "w: " + self.yazi_alani.text())
-        else:
+            print("x: " + self.yazix.text() + "y: " + self.yaziy.text() + "z: " +self.yaziz.text() + "r: " + self.yazi_alani.text() + "p: " +self.euy.text() + "y: " +self.euz.text())
+        elif sender.text() == "Hedefe Git":
+            e =float(self.euy.text())
+            f = float(self.euz.text())
             d = float(self.yazi_alani.text())
             a = float(self.yazix.text())
             b = float(self.yaziy.text())
             c = float(self.yaziz.text())
-            go_to_joint_state(a,b,c,d)
-
+            q = quaternion_from_euler(d, e, f)
+            f1 = q[0]
+            f2 = q[1]
+            f3 = q[2]
+            f4 = q[3]
+            print(f1,f2,f3,f4 )
+            go_to_pose_goal(a,b,c,f1,f2,f3,f4)
+        else:
+            e1 = float(self.j0.text()) 
+            e2 = float(self.j1.text()) 
+            e3 = float(self.j2.text()) 
+            e4= float(self.j3.text()) 
+            
+            go_to_joint_state(e1,e2,e3,e4)
 
 app = QtWidgets.QApplication(sys.argv)
 
